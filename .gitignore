@@ -80,6 +80,9 @@ remotion-composer/out/
 remotion-composer/public/*
 # But keep demo props (shipped with the project for zero-key demos)
 !remotion-composer/public/demo-props/
+# Keep the Sample005 P1 assets required by the registered composition.
+!remotion-composer/public/sample005-v2/
+!remotion-composer/public/sample005-v2/**
 # Ignore test/scratch compositions in demo-props (keep only curated demos)
 remotion-composer/public/demo-props/test-*
 remotion-composer/public/demo-props/talking-head-*

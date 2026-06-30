@@ -1,0 +1,11 @@
+{
+  "tokens": {
+    "colors.background": "#070504",
+    "colors.gold": "#F5E7D0",
+    "colors.coffee": "#2A140C",
+    "font.heading": "Microsoft YaHei",
+    "layout.aspect_ratio": "9:16",
+    "layout.resolution": "1080x1920",
+    "mood": "dark premium black gold coffee"
+  }
+}

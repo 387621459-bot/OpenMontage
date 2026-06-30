@@ -5,6 +5,7 @@
   "scripts": {
     "start": "npx remotion studio",
     "build": "npx remotion render src/index.tsx Explainer out/video.mp4",
+    "build:sample005": "node scripts/build-sample005.cjs",
     "upgrade": "npx remotion upgrade"
   },
   "dependencies": {
