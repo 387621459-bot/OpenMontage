@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const {spawnSync} = require("child_process");
+const {preflightRemotionBrowser} = require("./remotion-browser-preflight.cjs");
 
 const composerDir = path.resolve(__dirname, "..");
 const sampleRoot = path.resolve(
@@ -15,7 +16,6 @@ const timingPath = path.join(sampleRoot, "05_report", "build_timings.json");
 const remotionCli = path.join(composerDir, "node_modules", "@remotion", "cli", "remotion-cli.js");
 const entryPoint = path.join(composerDir, "src", "sample006-entry.tsx");
 const propsPath = path.join(composerDir, "public", "demo-props", "sample006-workbench-promo.json");
-const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE;
 const ffmpeg = process.env.FFMPEG_PATH || "ffmpeg";
 
 const run = (command, args, label) => {
@@ -27,16 +27,21 @@ const run = (command, args, label) => {
   return (Date.now() - started) / 1000;
 };
 
+let browserExecutable;
+try {
+  browserExecutable = preflightRemotionBrowser();
+} catch {
+  process.exit(1);
+}
+
 fs.mkdirSync(path.dirname(outputPath), {recursive: true});
 fs.mkdirSync(path.dirname(intermediatePath), {recursive: true});
 const remotionArgs = [
   remotionCli, "render", entryPoint, "Sample006WorkbenchPromo", intermediatePath,
   `--props=${propsPath}`, "--codec=h264", "--pixel-format=yuv420p", "--crf=18", "--overwrite",
 ];
-if (browserExecutable) {
-  remotionArgs.push(`--browser-executable=${path.resolve(browserExecutable)}`);
-  console.log("[sample006] Using REMOTION_BROWSER_EXECUTABLE override");
-}
+remotionArgs.push(`--browser-executable=${browserExecutable}`);
+console.log("[sample006] Using REMOTION_BROWSER_EXECUTABLE override");
 
 const renderSeconds = run(process.execPath, remotionArgs, "Rendering 540 frames with Remotion");
 const postSeconds = run(ffmpeg, [

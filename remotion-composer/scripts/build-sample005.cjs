@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const {spawnSync} = require("child_process");
+const {preflightRemotionBrowser} = require("./remotion-browser-preflight.cjs");
 
 const composerDir = path.resolve(__dirname, "..");
 const isV3 = process.argv.includes("--v3");
@@ -34,7 +35,6 @@ const remotionCli = path.join(
 const entryPoint = path.join(composerDir, "src", "index.tsx");
 const propsPath = path.join(composerDir, "public", "demo-props", "sample005-v2.json");
 const ffmpeg = process.env.FFMPEG_PATH || "ffmpeg";
-const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE;
 
 const run = (command, args, label) => {
   console.log(`[sample005] ${label}`);
@@ -59,6 +59,13 @@ if (!fs.existsSync(propsPath)) {
   throw new Error(`Sample005 props are missing: ${propsPath}`);
 }
 
+let browserExecutable;
+try {
+  browserExecutable = preflightRemotionBrowser();
+} catch {
+  process.exit(1);
+}
+
 fs.mkdirSync(path.dirname(intermediatePath), {recursive: true});
 fs.mkdirSync(path.dirname(outputPath), {recursive: true});
 
@@ -75,10 +82,8 @@ const remotionArgs = [
   "--overwrite",
 ];
 
-if (browserExecutable) {
-  remotionArgs.push(`--browser-executable=${path.resolve(browserExecutable)}`);
-  console.log("[sample005] Using REMOTION_BROWSER_EXECUTABLE override");
-}
+remotionArgs.push(`--browser-executable=${browserExecutable}`);
+console.log("[sample005] Using REMOTION_BROWSER_EXECUTABLE override");
 
 run(process.execPath, remotionArgs, `Rendering ${compositionId} with Remotion`);
 
