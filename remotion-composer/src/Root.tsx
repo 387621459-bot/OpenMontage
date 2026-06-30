@@ -18,6 +18,7 @@ import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
 import { Sample005V2Composition, Sample005V3Composition } from "./Sample005V2";
 import { Sample006WorkbenchPromo } from "./Sample006WorkbenchPromo";
+import { Sample007SmartBottleDemo } from "./Sample007SmartBottleDemo";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -344,6 +345,18 @@ export const Root: React.FC = () => {
         defaultProps={{
           title: "AI Video Workbench",
           subtitle: "从一句需求，到一条完整样片",
+        }}
+      />
+      <Composition
+        id="Sample007SmartBottleDemo"
+        component={Sample007SmartBottleDemo}
+        durationInFrames={540}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          productName: "智能温控水杯",
+          heroSubtitle: "看得见温度的每日饮水助手",
         }}
       />
     </>
