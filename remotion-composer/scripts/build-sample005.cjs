@@ -3,6 +3,9 @@ const path = require("path");
 const {spawnSync} = require("child_process");
 
 const composerDir = path.resolve(__dirname, "..");
+const isV3 = process.argv.includes("--v3");
+const compositionId = isV3 ? "Sample005V3" : "Sample005V2";
+const previewName = isV3 ? "preview_v3.mp4" : "preview_v2.mp4";
 const defaultSampleRoot = path.resolve(
   composerDir,
   "..",
@@ -14,9 +17,13 @@ const defaultSampleRoot = path.resolve(
 );
 const sampleRoot = path.resolve(process.env.SAMPLE005_ROOT || defaultSampleRoot);
 const outputPath = path.resolve(
-  process.env.SAMPLE005_OUTPUT || path.join(sampleRoot, "04_video", "preview_v2.mp4"),
+  process.env.SAMPLE005_OUTPUT || path.join(sampleRoot, "04_video", previewName),
 );
-const intermediatePath = path.join(composerDir, "out", "sample005-v2.remotion.mp4");
+const intermediatePath = path.join(
+  composerDir,
+  "out",
+  isV3 ? "sample005-v3.remotion.mp4" : "sample005-v2.remotion.mp4",
+);
 const remotionCli = path.join(
   composerDir,
   "node_modules",
@@ -59,7 +66,7 @@ const remotionArgs = [
   remotionCli,
   "render",
   entryPoint,
-  "Sample005V2",
+  compositionId,
   intermediatePath,
   `--props=${propsPath}`,
   "--codec=h264",
@@ -73,18 +80,20 @@ if (browserExecutable) {
   console.log("[sample005] Using REMOTION_BROWSER_EXECUTABLE override");
 }
 
-run(process.execPath, remotionArgs, "Rendering Sample005V2 with Remotion");
+run(process.execPath, remotionArgs, `Rendering ${compositionId} with Remotion`);
 
-run(
-  ffmpeg,
-  [
-    "-y",
-    "-hide_banner",
-    "-loglevel",
-    "warning",
-    "-i",
-    intermediatePath,
-    "-an",
+const ffmpegArgs = [
+  "-y",
+  "-hide_banner",
+  "-loglevel",
+  "warning",
+  "-i",
+  intermediatePath,
+  "-map",
+  "0:v:0",
+  ...(isV3
+    ? ["-map", "0:a:0", "-c:a", "aac", "-b:a", "160k"]
+    : ["-an"]),
     "-c:v",
     "libx264",
     "-preset",
@@ -105,10 +114,11 @@ run(
     "bt709",
     "-movflags",
     "+faststart",
+    ...(isV3 ? ["-shortest"] : []),
     outputPath,
-  ],
-  "Normalizing final MP4 to H.264 yuv420p",
-);
+];
+
+run(ffmpeg, ffmpegArgs, "Normalizing final MP4 to H.264 yuv420p");
 
 fs.rmSync(intermediatePath, {force: true});
 console.log(`[sample005] Output: ${outputPath}`);

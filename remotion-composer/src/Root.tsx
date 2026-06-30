@@ -16,7 +16,7 @@ import { ProductReveal, ProductRevealProps } from "./components/ProductReveal";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
-import { Sample005V2Composition } from "./Sample005V2";
+import { Sample005V2Composition, Sample005V3Composition } from "./Sample005V2";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -332,6 +332,7 @@ export const Root: React.FC = () => {
         } as EndTagProps}
       />
       <Sample005V2Composition />
+      <Sample005V3Composition />
     </>
   );
 };
